@@ -6,7 +6,6 @@ import mockBasicCC from './mock-component-config';
 import mockPagesCC from './mock-component-config-pages';
 import mockTestsCC from './mock-component-config-tests';
 import mockPagesTestsCC from './mock-component-config-pages-tests';
-// import mockNavigation from './mock-navigation';
 
 jest.mock('../../src/app/components/Home', () => () => {});
 jest.mock('./MockComponent', () => () => {});
@@ -146,6 +145,7 @@ describe('configureApp', () => {
             text: 'Mock',
             exampleType: configKey,
           }];
+
           if (configKey === 'tests') {
             expectedRoutes = ['/site/mock', '/raw/tests'];
             expectedNavigation.links = [];
@@ -158,6 +158,7 @@ describe('configureApp', () => {
           }
 
           testRoutesAndNavigation(siteConfig, componentConfig, expectedRoutes, expectedNavigation);
+          // testLinkComponent(siteConfig, componentConfig, MockComponent);
         });
 
         it(`creates a ${configKey} link with a custom component`, () => {
@@ -169,6 +170,7 @@ describe('configureApp', () => {
           }];
 
           testRoutesAndNavigation(siteConfig, componentConfig, expectedRoutes, expectedNavigation);
+          // testLinkComponent(siteConfig, componentConfig, MockComponent);
           // TEST THE CUSTOM COMPONENT
         });
 
@@ -189,6 +191,7 @@ describe('configureApp', () => {
           }
 
           testRoutesAndNavigation(siteConfig, componentConfig, expectedRoutes, expectedNavigation);
+          testLinkComponent(siteConfig, componentConfig, MockComponent);
         });
 
         it('creates a link with a sub nav indicator and custom menu component', () => {
@@ -201,9 +204,38 @@ describe('configureApp', () => {
           }];
 
           testRoutesAndNavigation(siteConfig, componentConfig, expectedRoutes, expectedNavigation);
+          // testLinkComponent(siteConfig, componentConfig, MockComponent);
       // TEST THE CUSTOM COMPONENT
         });
       }
+    });
+
+    it('creates a home link with the default home component', () => {
+      siteConfig.navConfig.navigation.links = [{
+        path: '/site/home',
+        text: 'Home',
+        exampleType: 'home',
+      }];
+      expectedRoutes = ['/site/home'];
+      expectedNavigation.links = [{
+        path: '/site/home',
+        text: 'Home',
+      }];
+
+      testRoutesAndNavigation(siteConfig, mockBasicCC, expectedRoutes, expectedNavigation);
+      // TEST THE CUSTOM COMPONENT
+    });
+
+    it('creates a home link with the a custom home component', () => {
+      siteConfig.navConfig.navigation.links = [{
+        path: '/site/home',
+        text: 'Home',
+        exampleType: 'home',
+        component: MockComponent,
+      }];
+
+      testRoutesAndNavigation(siteConfig, mockBasicCC, expectedRoutes, expectedNavigation);
+      // TEST THE CUSTOM COMPONENT
     });
 
     it('creates multiple links', () => {
@@ -337,45 +369,4 @@ describe('configureApp', () => {
       testMenuContent(siteConfig, mockPagesTestsCC, expectedMenuLinks);
     });
   });
-
-  describe('handles the navigation.links key for home link', () => {
-    const expectedRoutes = ['/site/home'];
-
-    const expectedNavigation = {
-      index: undefined,
-      links: [{
-        path: '/site/home',
-        text: 'Home',
-      }],
-      extensions: undefined,
-    };
-
-    it('creates a home link with the default home component', () => {
-      siteConfig.navConfig.navigation.links = [{
-        path: '/site/home',
-        text: 'Home',
-        exampleType: 'home',
-      }];
-      testRoutesAndNavigation(siteConfig, mockBasicCC, expectedRoutes, expectedNavigation);
-      // TEST THE CUSTOM COMPONENT
-    });
-
-    it('creates a home link with the a custom home component', () => {
-      siteConfig.navConfig.navigation.links = [{
-        path: '/site/home',
-        text: 'Home',
-        exampleType: 'home',
-        component: MockComponent,
-      }];
-      testRoutesAndNavigation(siteConfig, mockBasicCC, expectedRoutes, expectedNavigation);
-      // TEST THE CUSTOM COMPONENT
-    });
-  });
-
-  //
-  // it('should create the expected navigation and route config', () => {
-  //   // const { navigation } = configureApp(defaultSiteConfig, mockComponentConfig);
-  //   // expect(navigation).toMatchObject(mockNavigation);
-  //   assertNavigation(siteConfig, mockNavigation);
-  // });
 });

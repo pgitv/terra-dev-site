@@ -6,9 +6,9 @@ const componentConfig = {
     path: '/mock-component',
     component: MockComponent,
   },
-  'mock-pages-1': {
+  'mock-1': {
     name: 'Single Site Page',
-    path: '/mock-pages-1',
+    path: '/mock-1',
     pages: [
       {
         name: 'Index',
@@ -17,9 +17,9 @@ const componentConfig = {
       },
     ],
   },
-  'mock-pages-2': {
+  'mock-2': {
     name: 'Multiple Site Pages',
-    path: '/mock-pages-2',
+    path: '/mock-2',
     pages: [
       {
         name: 'Index 1',
@@ -33,9 +33,9 @@ const componentConfig = {
       },
     ],
   },
-  'mock-pages-3': {
+  'mock-3': {
     name: 'Nested Site Pages',
-    path: '/mock-pages-3',
+    path: '/mock-3',
     pages: [
       {
         name: 'First Layer',
@@ -50,9 +50,9 @@ const componentConfig = {
       },
     ],
   },
-  'mock-pages-4': {
+  'mock-4': {
     name: 'Site Page with Custom Placeholder',
-    path: '/mock-pages-4',
+    path: '/mock-4',
     // component: MockComponent,
     pages: [
       {
@@ -62,9 +62,9 @@ const componentConfig = {
       },
     ],
   },
-  'mock-pages-5': {
+  'mock-5': {
     name: 'Nested Site Page with Custom Placeholders',
-    path: '/mock-pages-5',
+    path: '/mock-5',
     pages: [
       {
         name: 'First Layer',
