@@ -7,12 +7,12 @@ import ComponentsUtils from './ComponentsUtils';
 import MenuList from '../common/menu/MenuList';
 import { componentConfigPropType, siteConfigPropType } from './ComponentsProptypes';
 
-const menuText = {
+const defaultMenuText = {
   pages: 'Components',
   tests: 'Tests',
 };
 
-const subMenuText = {
+const defaultMubMenuText = {
   pages: '',
   tests: 'Tests',
 };
@@ -38,6 +38,8 @@ const propTypes = {
    * Whether or not the menu is a subMenu.
    */
   isSubMenu: PropTypes.bool,
+  menuText: PropTypes.string,
+  subMenuText: PropTypes.string,
 };
 
 const defaultProps = {
@@ -48,12 +50,15 @@ const defaultProps = {
   isSubMenu: false,
 };
 
-const ComponentsMenu = ({ routingStackDelegate, config, exampleType, pathRoot, isSubMenu }) => {
-  let headerText = menuText[`${exampleType}`];
+const ComponentsMenu = (props) => {
+  const { routingStackDelegate, config, exampleType, pathRoot, isSubMenu, menuText, subMenuText } = props;
+  let headerText = menuText || defaultMenuText[`${exampleType}`];
   let links;
 
   if (isSubMenu) {
-    headerText = `${config.name} ${subMenuText[exampleType]}`;
+    console.log(subMenuText)
+    const subHeaderText = subMenuText || defaultMubMenuText[exampleType] || '';
+    headerText = `${config.name} ${subHeaderText}`;
     links = ComponentsUtils.generateSubMenuLinks(config, exampleType, pathRoot);
   } else {
     links = ComponentsUtils.generateMenuLinks(config, exampleType, pathRoot);

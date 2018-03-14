@@ -1,5 +1,5 @@
-const navigationConfig = require('./navigation.config');
-const appConfig = require('./app.config');
+import navigationConfig from './navigation.config';
+import appConfig from './app.config';
 
 module.exports = {
   /* The application configuration.  */

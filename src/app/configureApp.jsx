@@ -20,7 +20,7 @@ const buildComponent = (Component, configuredProps) => (
   }
 );
 
-const buildSubNavigationConfig = (array, config, ComponentMenu, exampleType, pathRoot) => {
+const buildSubNavigationConfig = (array, config, ComponentMenu, exampleType, pathRoot, menuProps) => {
   config.map((componentKey) => {
     const componentPath = componentKey.path;
     const examples = componentKey[`${exampleType}`];
@@ -38,7 +38,7 @@ const buildSubNavigationConfig = (array, config, ComponentMenu, exampleType, pat
         return undefined;
       }
 
-      const componentMenuProps = { config: componentKey, pathRoot: `${path}`, exampleType, isSubMenu: true };
+      const componentMenuProps = { config: componentKey, pathRoot: `${path}`, exampleType, isSubMenu: true, ...menuProps };
 
       array.push({
         path: `${path}`,
@@ -52,16 +52,16 @@ const buildSubNavigationConfig = (array, config, ComponentMenu, exampleType, pat
   return array;
 };
 
-const buildNavigationConfig = (config, ComponentMenu, exampleType, pathRoot) => {
+const buildNavigationConfig = (config, ComponentMenu, exampleType, pathRoot, menuProps) => {
   const generatedConfig = {};
-  const componentMenuProps = { config: Object.values(config), pathRoot, exampleType };
+  const componentMenuProps = { config: Object.values(config), pathRoot, exampleType, ...menuProps };
 
   generatedConfig[pathRoot] = {
     path: pathRoot,
     component: buildComponent(ComponentMenu, componentMenuProps),
   };
 
-  const subNavConfig = buildSubNavigationConfig([], Object.values(config), ComponentMenu, exampleType, pathRoot);
+  const subNavConfig = buildSubNavigationConfig([], Object.values(config), ComponentMenu, exampleType, pathRoot, menuProps);
 
   subNavConfig.forEach((subConfig) => {
     generatedConfig[subConfig.path] = subConfig;
@@ -122,7 +122,7 @@ const routeConfiguration = (siteConfig, componentConfig) => {
     }
 
     if (link.hasSubNav) {
-      menu = Object.assign(menu, buildNavigationConfig(componentConfig, menuComponent, exampleType, link.path));
+      menu = Object.assign(menu, buildNavigationConfig(componentConfig, menuComponent, exampleType, link.path, link.menuProps));
     }
   });
 
