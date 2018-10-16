@@ -66,6 +66,12 @@ const siteConfig = {
   /* The list of side effect js files. */
   sideEffectImports: [],
 
+  /* The list of jest page types to run automatically. */
+  jestPageTypes: ['test'],
+
+  /* The list of wdio page types to run automatically. */
+  wdioPageTypes: ['test'],
+
   /* Path to the image to display as page placeholder when a component does not render. */
   placeholderSrc: path.join(__dirname, '..', '..', 'terra.png'),
 
