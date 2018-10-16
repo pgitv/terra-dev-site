@@ -28,7 +28,7 @@ const pageConfig = (route, namespace) => {
 /**
 * Recursively generates page configs.
 */
-const recurs = (config, routes, contentPath, ext, namespace, filePath) => {
+const recurs = (config, routes, contentPath, ext, filePath, namespace) => {
   // Prefer modying config over creating new config, this way we blend file paths together in the ui.
   const configCopy = config || pageConfig(routes[0], namespace);
 
@@ -79,7 +79,7 @@ const buildPageConfig = (filePaths, generatePagesOptions, namespace) => (
     // Name space all the generated config by pakcage.
     const key = `${packageNamespace}:${routes[0]}`;
 
-    pages[key] = recurs(pages[key], routes, contentPath, ext, packageNamespace, filePath);
+    pages[key] = recurs(pages[key], routes, contentPath, ext, filePath, packageNamespace);
     return acc;
   }, {})
 );
