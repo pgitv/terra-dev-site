@@ -6,6 +6,20 @@ const baseRouteOfExample = (siteConfig, pageKey) => {
   return baseRouteLink ? baseRouteLink.path : null;
 };
 
+const traversePathsFromTree = (currentPage, currentRoute) => {
+  if (currentPage.pages == null) {
+    describe(currentPage.name, () => {
+      beforeEach(() => {
+        browser.url(`/#/raw${currentRoute}${currentPage.path}`);
+      });
+      Terra.should.beAccessible();
+      Terra.should.matchScreenshot();
+    });
+  } else {
+    currentPage.pages.map(mappedPage => traversePathsFromTree(mappedPage, `${currentRoute}${currentPage.path}`));
+  }
+};
+
 const wdioTestDevSiteSnapshots = () => {
   const siteConfig = loadSiteConfig();
   const pagesConfig = generatePagesConfig(siteConfig, true, false);
@@ -14,15 +28,7 @@ const wdioTestDevSiteSnapshots = () => {
     const pageKey = pagesEntry[0];
     const baseRoute = baseRouteOfExample(siteConfig, pageKey);
     if (siteConfig.wdioPageTypes.includes(pageKey) && baseRoute) {
-      pagesEntry[1].forEach((pageConfig) => {
-        describe(pageConfig.name, () => {
-          beforeEach(() => {
-            browser.url(`/#/raw${baseRoute}${pageConfig.path}`);
-          });
-          Terra.should.beAccessible();
-          Terra.should.matchScreenshot();
-        });
-      });
+      pagesEntry[1].map(page => traversePathsFromTree(page, baseRoute));
     }
   });
 };
