@@ -43,11 +43,7 @@
     "extends browserslist-config-terra"
   ],
   "eslintConfig": {
-    "extends": "terra",
-    "globals": {
-      "Terra": true,
-      "browser": true
-    }
+    "extends": "terra"
   },
   "stylelint": {
     "extends": "stylelint-config-terra"
