@@ -20,13 +20,13 @@ const mergeObjectOfArrays = (object1, object2) => {
 const createViewportObjectFromPageTree = (currentPage, currentRoute, options = {}, groupingDirectory = null) => {
   if (!currentPage.pages) {
     // eslint-disable-next-line global-require, import/no-dynamic-require
-    const pageObject = require(currentPage.filePath);
+    const { viewports, selector } = require(currentPage.filePath);
     const viewportObject = {};
-    pageObject.viewports.forEach((viewport) => {
+    viewports.forEach((viewport) => {
       viewportObject[viewport] = [{
         name: currentPage.name,
         groupingDirectory,
-        selector: pageObject.selector,
+        selector,
         url: `/#/raw${currentRoute}${currentPage.path}`,
       }];
     });
