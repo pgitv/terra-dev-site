@@ -18,7 +18,7 @@ const mergeObjectOfArrays = (object1, object2) => {
   return mergedObject;
 };
 
-const createViewportObjectFromPageTree = (currentPage, currentRoute, options = {}, groupingDirectory) => {
+const createViewportObjectFromPageTree = (currentPage, currentRoute, options = {}, groupingDirectory = null) => {
   if (!currentPage.pages) {
     const { viewports, selector } = options.testFileConfig[currentPage.name];
     const viewportObject = {};
@@ -34,7 +34,7 @@ const createViewportObjectFromPageTree = (currentPage, currentRoute, options = {
   }
   let viewportObject = {};
   currentPage.pages.forEach((subPage) => {
-    const subViewportObject = createViewportObjectFromPageTree(subPage, `${currentRoute}${currentPage.path}`, options, path.join(groupingDirectory, subPage.name));
+    const subViewportObject = createViewportObjectFromPageTree(subPage, `${currentRoute}${currentPage.path}`, options, path.join(groupingDirectory, currentPage.name));
     viewportObject = mergeObjectOfArrays(viewportObject, subViewportObject);
   });
   return viewportObject;
@@ -61,7 +61,7 @@ const wdioTestDevSiteSnapshots = (options = {}) => {
     if (siteConfig.wdioPageTypes.includes(pageKey) && baseRoute) {
       pagesEntry[1].forEach((page) => {
         if (!options.package || page.path.includes(`/${options.package}/`)) {
-          viewportObject = mergeObjectOfArrays(viewportObject, createViewportObjectFromPageTree(page, baseRoute, options, page.name));
+          viewportObject = mergeObjectOfArrays(viewportObject, createViewportObjectFromPageTree(page, baseRoute, options));
         }
       });
     }
