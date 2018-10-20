@@ -1,3 +1,4 @@
+import path from 'path';
 import SERVICE_DEFAULTS from 'terra-toolkit/config/wdio/services.default-config';
 import loadSiteConfig from '../../../scripts/generate-app-config/loadSiteConfig';
 import generatePagesConfig from '../../../scripts/generate-app-config/generatePagesConfig';
@@ -12,12 +13,12 @@ const baseRouteOfExample = (siteConfig, pageKey) => {
 const mergeObjectOfArrays = (object1, object2) => {
   const mergedObject = {};
   VIEWPORT_KEYS.forEach((key) => {
-    mergedObject[key] = (object1[key] || []).concat(object2[key || []]);
+    mergedObject[key] = (object1[key] || []).concat(object2[key] || []);
   });
   return mergedObject;
 };
 
-const createViewportObjectFromPageTree = (currentPage, currentRoute, options = {}, groupingDirectory = null) => {
+const createViewportObjectFromPageTree = (currentPage, currentRoute, options = {}, groupingDirectory) => {
   if (!currentPage.pages) {
     const { viewports, selector } = options.testFileConfig[currentPage.name];
     const viewportObject = {};
@@ -33,8 +34,8 @@ const createViewportObjectFromPageTree = (currentPage, currentRoute, options = {
   }
   let viewportObject = {};
   currentPage.pages.forEach((subPage) => {
-    const subViewportObject = createViewportObjectFromPageTree(subPage, `${currentRoute}${currentPage.path}`, options, currentPage.name);
-    viewportObject = mergeObjectOfArrays(subViewportObject, subViewportObject);
+    const subViewportObject = createViewportObjectFromPageTree(subPage, `${currentRoute}${currentPage.path}`, options, path.join(groupingDirectory, subPage.name));
+    viewportObject = mergeObjectOfArrays(viewportObject, subViewportObject);
   });
   return viewportObject;
 };
@@ -60,7 +61,7 @@ const wdioTestDevSiteSnapshots = (options = {}) => {
     if (siteConfig.wdioPageTypes.includes(pageKey) && baseRoute) {
       pagesEntry[1].forEach((page) => {
         if (!options.package || page.path.includes(`/${options.package}/`)) {
-          viewportObject = mergeObjectOfArrays(viewportObject, createViewportObjectFromPageTree(page, baseRoute, options));
+          viewportObject = mergeObjectOfArrays(viewportObject, createViewportObjectFromPageTree(page, baseRoute, options, page.name));
         }
       });
     }
