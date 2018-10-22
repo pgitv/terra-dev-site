@@ -46,7 +46,7 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
 
 const runTest = (test) => {
   describe(test.name, () => {
-    global.beforeEach(() => {
+    global.before(() => {
       global.browser.url(test.url);
     });
     global.Terra.should.matchScreenshot({ groupingDirectory: test.groupingDirectory, selector: test.selector });
