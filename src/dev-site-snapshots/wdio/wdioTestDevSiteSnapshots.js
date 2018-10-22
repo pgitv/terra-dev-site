@@ -49,8 +49,8 @@ const runTest = (test) => {
     global.beforeEach(() => {
       global.browser.url(test.url);
     });
-    global.Terra.should.beAccessible();
     global.Terra.should.matchScreenshot({ groupingDirectory: test.groupingDirectory, selector: test.selector });
+    global.Terra.should.beAccessible();
     if (test.themeableProperties) {
       global.Terra.should.themeCombinationOfCustomProperties({
         testName: 'themed',
