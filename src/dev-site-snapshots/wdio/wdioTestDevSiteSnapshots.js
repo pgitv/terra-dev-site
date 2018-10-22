@@ -45,7 +45,7 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
 
 const runTest = (test) => {
   describe(test.name, () => {
-    global.before(() => {
+    global.beforeEach(() => {
       global.browser.url(test.url);
     });
     global.Terra.should.beAccessible();
