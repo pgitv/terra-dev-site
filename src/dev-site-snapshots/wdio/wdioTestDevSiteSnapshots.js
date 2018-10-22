@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import SERVICE_DEFAULTS from 'terra-toolkit/config/wdio/services.default-config';
 import loadSiteConfig from '../../../scripts/generate-app-config/loadSiteConfig';
 import generatePagesConfig from '../../../scripts/generate-app-config/generatePagesConfig';
@@ -22,9 +23,9 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
   if (!currentPage.pages) {
     const metadataFile = currentPage.filePath.replace(`.${pageKey}`, '.metadata');
     // eslint-disable-next-line global-require, import/no-dynamic-require
-    const { viewports, selector, themeableProperties } = require(metadataFile).default;
+    const { viewports, selector, themeableProperties } = fs.existsSync(metadataFile) ? require(metadataFile).default : {};
     const viewportObject = {};
-    viewports.forEach((viewport) => {
+    (viewports || VIEWPORT_KEYS).forEach((viewport) => {
       viewportObject[viewport] = [{
         name: currentPage.name,
         groupingDirectory,
