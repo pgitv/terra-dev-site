@@ -50,7 +50,6 @@ const runTest = (test) => {
       global.browser.url(test.url);
     });
     global.Terra.should.matchScreenshot({ groupingDirectory: test.groupingDirectory, selector: test.selector });
-    global.Terra.should.beAccessible();
     if (test.themeableProperties) {
       global.Terra.should.themeCombinationOfCustomProperties({
         testName: 'themed',
@@ -59,6 +58,7 @@ const runTest = (test) => {
         properties: test.themeableProperties,
       });
     }
+    global.Terra.should.beAccessible();
   });
 };
 
