@@ -3,7 +3,7 @@ import SERVICE_DEFAULTS from 'terra-toolkit/config/wdio/services.default-config'
 import loadSiteConfig from '../../../scripts/generate-app-config/loadSiteConfig';
 import generatePagesConfig from '../../../scripts/generate-app-config/generatePagesConfig';
 
-const VIEWPORT_KEYS = Object.keys(SERVICE_DEFAULTS.terraViewports);
+const VIEWPORT_KEYS = process.env.FORM_FACTOR ? [process.env.FORM_FACTOR] : Object.keys(SERVICE_DEFAULTS.terraViewports);
 
 const baseRouteOfExample = (siteConfig, pageKey) => {
   const baseRouteLink = siteConfig.navConfig.navigation.links.find(link => link.pageTypes.includes(pageKey));
@@ -18,9 +18,11 @@ const mergeObjectOfArrays = (object1, object2) => {
   return mergedObject;
 };
 
-const createViewportObjectFromPageTree = (currentPage, currentRoute, options = {}, groupingDirectory = null) => {
+const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, options = {}, groupingDirectory = null) => {
   if (!currentPage.pages) {
-    const { viewports, selector } = options.testFileConfig[currentPage.name];
+    const metadataFile = currentPage.filePath.replace(`.${pageKey}`, '.metadata');
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const { viewports, selector, themeableProperties } = require(metadataFile).default;
     const viewportObject = {};
     viewports.forEach((viewport) => {
       viewportObject[viewport] = [{
@@ -28,13 +30,14 @@ const createViewportObjectFromPageTree = (currentPage, currentRoute, options = {
         groupingDirectory,
         selector,
         url: `/#/raw${currentRoute}${currentPage.path}`,
+        themeableProperties,
       }];
     });
     return viewportObject;
   }
   let viewportObject = {};
   currentPage.pages.forEach((subPage) => {
-    const subViewportObject = createViewportObjectFromPageTree(subPage, `${currentRoute}${currentPage.path}`, options, path.join(groupingDirectory, currentPage.name));
+    const subViewportObject = createViewportObjectFromPageTree(pageKey, subPage, `${currentRoute}${currentPage.path}`, options, path.join(groupingDirectory || '', currentPage.name));
     viewportObject = mergeObjectOfArrays(viewportObject, subViewportObject);
   });
   return viewportObject;
@@ -47,6 +50,13 @@ const runTest = (test) => {
     });
     global.Terra.should.beAccessible();
     global.Terra.should.matchScreenshot({ groupingDirectory: test.groupingDirectory, selector: test.selector });
+    if (test.themeableProperties) {
+      global.Terra.should.themeCombinationOfCustomProperties({
+        testName: 'themed',
+        selector: test.selector,
+        properties: test.themeableProperties,
+      });
+    }
   });
 };
 
@@ -61,7 +71,7 @@ const wdioTestDevSiteSnapshots = (options = {}) => {
     if (siteConfig.wdioPageTypes.includes(pageKey) && baseRoute) {
       pagesEntry[1].forEach((page) => {
         if (!options.package || page.path.includes(`/${options.package}/`)) {
-          viewportObject = mergeObjectOfArrays(viewportObject, createViewportObjectFromPageTree(page, baseRoute, options));
+          viewportObject = mergeObjectOfArrays(viewportObject, createViewportObjectFromPageTree(pageKey, page, baseRoute, options));
         }
       });
     }
