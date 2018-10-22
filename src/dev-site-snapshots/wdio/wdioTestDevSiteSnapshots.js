@@ -54,6 +54,7 @@ const runTest = (test) => {
       global.Terra.should.themeCombinationOfCustomProperties({
         testName: 'themed',
         selector: test.selector,
+        groupingDirectory: test.groupingDirectory,
         properties: test.themeableProperties,
       });
     }
