@@ -50,16 +50,21 @@ const runTest = (test) => {
       global.browser.url(test.url);
     });
     global.Terra.should.matchScreenshot({ groupingDirectory: test.groupingDirectory, selector: test.selector });
-    if (test.themeableProperties) {
+    global.Terra.should.beAccessible();
+  });
+  if (test.themeableProperties) {
+    describe(test.name, () => {
+      global.before(() => {
+        global.browser.url(test.url);
+      });
       global.Terra.should.themeCombinationOfCustomProperties({
         testName: 'themed',
         selector: test.selector,
         groupingDirectory: test.groupingDirectory,
         properties: test.themeableProperties,
       });
-    }
-    global.Terra.should.beAccessible();
-  });
+    });
+  }
 };
 
 const wdioTestDevSiteSnapshots = (options = {}) => {
