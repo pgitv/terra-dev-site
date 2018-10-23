@@ -22,8 +22,13 @@ const mergeObjectOfArrays = (object1, object2) => {
 const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, options = {}, groupingDirectory = null) => {
   if (!currentPage.pages) {
     const metadataFile = currentPage.filePath.replace(`.${pageKey}`, '.metadata');
+    const {
+      viewports,
+      selector,
+      themeableProperties,
+      steps,
     // eslint-disable-next-line global-require, import/no-dynamic-require
-    const { viewports, selector, themeableProperties } = fs.existsSync(metadataFile) ? require(metadataFile).default : {};
+    } = fs.existsSync(metadataFile) ? require(metadataFile).default : {};
     const viewportObject = {};
     (viewports || VIEWPORT_KEYS).forEach((viewport) => {
       viewportObject[viewport] = [{
@@ -32,6 +37,7 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
         selector,
         url: `/#/raw${currentRoute}${currentPage.path}`,
         themeableProperties,
+        steps,
       }];
     });
     return viewportObject;
@@ -46,22 +52,39 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
 
 const runTest = (test) => {
   describe(test.name, () => {
-    global.before(() => {
-      global.browser.url(test.url);
+    (test.steps || [{}]).forEach((step) => {
+      global.before(() => {
+        global.browser.url(test.url);
+        if (step.action) {
+          step.action();
+        }
+      });
+      const matchScreenshotArgs = step.name ? [step.name] : [];
+      matchScreenshotArgs.push({ groupingDirectory: test.groupingDirectory, selector: test.selector });
+      global.Terra.should.matchScreenshot(...matchScreenshotArgs);
+      global.Terra.should.beAccessible();
     });
-    global.Terra.should.matchScreenshot({ groupingDirectory: test.groupingDirectory, selector: test.selector });
-    global.Terra.should.beAccessible();
   });
+
   if (test.themeableProperties) {
     describe(test.name, () => {
       global.before(() => {
         global.browser.url(test.url);
       });
-      global.Terra.should.themeCombinationOfCustomProperties({
-        testName: 'themed',
-        selector: test.selector,
-        groupingDirectory: test.groupingDirectory,
-        properties: test.themeableProperties,
+
+      (test.steps || [{}]).forEach((step) => {
+        global.before(() => {
+          global.browser.url(test.url);
+          if (step.action) {
+            step.action();
+          }
+        });
+        global.Terra.should.themeCombinationOfCustomProperties({
+          testName: step.name ? `themed-${step.name}` : 'themed',
+          selector: test.selector,
+          groupingDirectory: test.groupingDirectory,
+          properties: test.themeableProperties,
+        });
       });
     });
   }
