@@ -66,7 +66,7 @@ const runTest = (test) => {
       const matchScreenshotArgs = step.name ? [step.name] : [];
       matchScreenshotArgs.push({ groupingDirectory: test.groupingDirectory, selector: step.selector || test.selector });
       global.Terra.should.matchScreenshot(...matchScreenshotArgs);
-      global.Terra.should.beAccessible(step.accessibilityRules || test.accessibilityRules);
+      global.Terra.should.beAccessible({ rules: step.accessibilityRules || test.accessibilityRules });
     });
   });
 
