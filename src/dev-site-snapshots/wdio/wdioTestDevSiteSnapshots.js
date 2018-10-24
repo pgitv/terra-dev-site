@@ -59,12 +59,9 @@ const runTest = (test) => {
         if (step.refreshUrl || index === 0) {
           global.browser.url(test.url);
         }
-        if (step.action) {
-          step.action();
-        }
       });
 
-      const stepName = step.name ? step.name : 'default';
+      const stepName = step.name || 'default';
       if (step.action) {
         it(stepName, () => {
           step.action();
