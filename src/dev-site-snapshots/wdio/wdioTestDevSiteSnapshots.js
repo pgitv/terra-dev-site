@@ -63,9 +63,15 @@ const runTest = (test) => {
           step.action();
         }
       });
-      const matchScreenshotArgs = step.name ? [step.name] : [];
-      matchScreenshotArgs.push({ groupingDirectory: test.groupingDirectory, selector: step.selector || test.selector });
-      global.Terra.should.matchScreenshot(...matchScreenshotArgs);
+
+      const stepName = step.name ? step.name : 'default';
+      if (step.action) {
+        it(stepName, () => {
+          step.action();
+        });
+      }
+
+      global.Terra.should.matchScreenshot(stepName, { groupingDirectory: test.groupingDirectory, selector: step.selector || test.selector });
       global.Terra.should.beAccessible({ rules: step.accessibilityRules || test.accessibilityRules });
     });
   });
@@ -77,12 +83,17 @@ const runTest = (test) => {
           if (step.refreshUrl || index === 0) {
             global.browser.url(test.url);
           }
-          if (step.action) {
-            step.action();
-          }
         });
+
+        const stepName = step.name ? `${step.name}-themed` : 'themed';
+        if (step.action) {
+          it(stepName, () => {
+            step.action();
+          });
+        }
+
         global.Terra.should.themeCombinationOfCustomProperties({
-          testName: step.name ? `${step.name}-themed` : 'themed',
+          testName: stepName,
           selector: step.selector || test.selector,
           groupingDirectory: test.groupingDirectory,
           properties: step.themeableProperties || test.themeableProperties,
