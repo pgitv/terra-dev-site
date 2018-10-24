@@ -120,8 +120,6 @@ const wdioTestDevSiteSnapshots = (options = {}) => {
     }
   });
 
-  console.log('Viewport Object', JSON.stringify(viewportObject, null, 2));
-
   Object.entries(viewportObject).forEach((viewportEntry) => {
     describe(viewportEntry[0], () => {
       global.before(() => {
