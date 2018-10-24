@@ -86,8 +86,8 @@ const runTest = (test) => {
           properties: step.themeableProperties || test.themeableProperties,
         });
       });
-    });
-  }
+    }
+  });
 };
 
 const wdioTestDevSiteSnapshots = (options = {}) => {
