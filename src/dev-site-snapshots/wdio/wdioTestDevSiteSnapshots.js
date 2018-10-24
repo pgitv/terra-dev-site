@@ -80,7 +80,7 @@ const runTest = (test) => {
           }
         });
         global.Terra.should.themeCombinationOfCustomProperties({
-          testName: step.name ? `themed-${step.name}` : 'themed',
+          testName: step.name ? `${step.name}-themed` : 'themed',
           selector: step.selector || test.selector,
           groupingDirectory: test.groupingDirectory,
           properties: step.themeableProperties || test.themeableProperties,
