@@ -51,39 +51,39 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
 };
 
 const runTest = (test) => {
-  describe(test.name, () => {
-    (test.steps || [{}]).forEach((step) => {
+  (test.steps || [{}]).forEach((step, index) => {
+    describe(test.name, () => {
       global.before(() => {
-        global.browser.url(test.url);
+        if (step.refreshUrl || index === 0) {
+          global.browser.url(test.url);
+        }
         if (step.action) {
           step.action();
         }
       });
       const matchScreenshotArgs = step.name ? [step.name] : [];
-      matchScreenshotArgs.push({ groupingDirectory: test.groupingDirectory, selector: test.selector });
+      matchScreenshotArgs.push({ groupingDirectory: test.groupingDirectory, selector: step.selector || test.selector });
       global.Terra.should.matchScreenshot(...matchScreenshotArgs);
       global.Terra.should.beAccessible();
     });
   });
 
-  if (test.themeableProperties) {
-    describe(test.name, () => {
-      global.before(() => {
-        global.browser.url(test.url);
-      });
-
-      (test.steps || [{}]).forEach((step) => {
+  (test.steps || [{}]).forEach((step, index) => {
+    if (step.themeableProperties || test.themeableProperties) {
+      describe(test.name, () => {
         global.before(() => {
-          global.browser.url(test.url);
+          if (step.refreshUrl || index === 0) {
+            global.browser.url(test.url);
+          }
           if (step.action) {
             step.action();
           }
         });
         global.Terra.should.themeCombinationOfCustomProperties({
           testName: step.name ? `themed-${step.name}` : 'themed',
-          selector: test.selector,
+          selector: step.selector || test.selector,
           groupingDirectory: test.groupingDirectory,
-          properties: test.themeableProperties,
+          properties: step.themeableProperties || test.themeableProperties,
         });
       });
     });
