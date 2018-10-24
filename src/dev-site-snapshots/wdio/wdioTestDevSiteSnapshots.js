@@ -27,6 +27,7 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
       selector,
       themeableProperties,
       steps,
+      accessibilityRules,
     // eslint-disable-next-line global-require, import/no-dynamic-require
     } = fs.existsSync(metadataFile) ? require(metadataFile).default : {};
     const viewportObject = {};
@@ -38,6 +39,7 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
         url: `/#/raw${currentRoute}${currentPage.path}`,
         themeableProperties,
         steps,
+        accessibilityRules,
       }];
     });
     return viewportObject;
@@ -64,7 +66,7 @@ const runTest = (test) => {
       const matchScreenshotArgs = step.name ? [step.name] : [];
       matchScreenshotArgs.push({ groupingDirectory: test.groupingDirectory, selector: step.selector || test.selector });
       global.Terra.should.matchScreenshot(...matchScreenshotArgs);
-      global.Terra.should.beAccessible();
+      global.Terra.should.beAccessible(step.accessibilityRules || test.accessibilityRules);
     });
   });
 
