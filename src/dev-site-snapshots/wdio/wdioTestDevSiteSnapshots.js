@@ -38,12 +38,15 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
     });
     return viewportObject;
   }
-  let viewportObject = {};
-  currentPage.pages.forEach((subPage) => {
-    const subViewportObject = createViewportObjectFromPageTree(pageKey, subPage, `${currentRoute}${currentPage.path}`, options, path.join(groupingDirectory || '', currentPage.name));
-    viewportObject = mergeObjectOfArrays(viewportObject, subViewportObject);
-  });
-  return viewportObject;
+  if (currentPage.pages) {
+    let viewportObject = {};
+    currentPage.pages.forEach((subPage) => {
+      const subViewportObject = createViewportObjectFromPageTree(pageKey, subPage, `${currentRoute}${currentPage.path}`, options, path.join(groupingDirectory || '', currentPage.name));
+      viewportObject = mergeObjectOfArrays(viewportObject, subViewportObject);
+    });
+    return viewportObject;
+  }
+  return {};
 };
 
 const runTest = (test) => {
