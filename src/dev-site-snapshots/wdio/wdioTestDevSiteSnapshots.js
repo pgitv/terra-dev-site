@@ -19,7 +19,7 @@ const mergeObjectOfArrays = (object1, object2) => {
 };
 
 const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, options = {}, groupingDirectory = null) => {
-  if (!currentPage.pages) {
+  if (!currentPage.pages && options.examples[currentPage.name]) {
     const {
       viewports,
       selector,
