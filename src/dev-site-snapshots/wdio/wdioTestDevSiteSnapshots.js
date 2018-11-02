@@ -1,5 +1,4 @@
 import path from 'path';
-import fs from 'fs';
 import SERVICE_DEFAULTS from 'terra-toolkit/config/wdio/services.default-config';
 import loadSiteConfig from '../../../scripts/generate-app-config/loadSiteConfig';
 import generatePagesConfig from '../../../scripts/generate-app-config/generatePagesConfig';
@@ -21,25 +20,20 @@ const mergeObjectOfArrays = (object1, object2) => {
 
 const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, options = {}, groupingDirectory = null) => {
   if (!currentPage.pages) {
-    const metadataFile = currentPage.filePath.replace(`.${pageKey}`, '.metadata');
     const {
       viewports,
       selector,
       themeableProperties,
-      steps,
-      accessibilityRules,
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    } = fs.existsSync(metadataFile) ? require(metadataFile).default : {};
+      axeOptions,
+    } = options.examples[currentPage.name];
     const viewportObject = {};
     (viewports || VIEWPORT_KEYS).forEach((viewport) => {
       viewportObject[viewport] = [{
-        name: currentPage.name,
         groupingDirectory,
         selector,
         url: `/#/raw${currentRoute}${currentPage.path}`,
         themeableProperties,
-        steps,
-        accessibilityRules,
+        axeOptions,
       }];
     });
     return viewportObject;
@@ -53,48 +47,20 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
 };
 
 const runTest = (test) => {
-  (test.steps || [{}]).forEach((step, index) => {
-    describe(test.name, () => {
-      global.before(() => {
-        if (step.refreshUrl || index === 0) {
-          global.browser.url(test.url);
-        }
-      });
-
-      const stepName = step.name || 'default';
-      if (step.action) {
-        it(stepName, () => {
-          step.action();
-        });
-      }
-
-      global.Terra.should.matchScreenshot(stepName, { groupingDirectory: test.groupingDirectory, selector: step.selector || test.selector });
-      global.Terra.should.beAccessible({ rules: step.accessibilityRules || test.accessibilityRules });
+  describe(test.name, () => {
+    global.before(() => {
+      global.browser.url(test.url);
     });
-  });
 
-  (test.steps || [{}]).forEach((step, index) => {
-    if (step.themeableProperties || test.themeableProperties) {
-      describe(test.name, () => {
-        global.before(() => {
-          if (step.refreshUrl || index === 0) {
-            global.browser.url(test.url);
-          }
-        });
+    global.Terra.should.matchScreenshot({ groupingDirectory: test.groupingDirectory, selector: test.selector });
+    global.Terra.should.beAccessible({ rules: test.axeOptions });
 
-        const stepName = step.name ? `${step.name}-themed` : 'themed';
-        if (step.action) {
-          it(stepName, () => {
-            step.action();
-          });
-        }
-
-        global.Terra.should.themeCombinationOfCustomProperties({
-          testName: stepName,
-          selector: step.selector || test.selector,
-          groupingDirectory: test.groupingDirectory,
-          properties: step.themeableProperties || test.themeableProperties,
-        });
+    if (test.themeableProperties) {
+      global.Terra.should.themeCombinationOfCustomProperties({
+        testName: 'themed',
+        selector: test.selector,
+        groupingDirectory: test.groupingDirectory,
+        properties: test.themeableProperties,
       });
     }
   });
@@ -120,7 +86,11 @@ const wdioTestDevSiteSnapshots = (options = {}) => {
   Object.entries(viewportObject).forEach((viewportEntry) => {
     describe(viewportEntry[0], () => {
       global.before(() => {
-        global.browser.setViewportSize(global.Terra.viewports(viewportEntry[0])[0]);
+        // Only set the form factor if the FORM_FACTOR environment variable is not set since that
+        // is done elsewhere in terra-toolkit in that case
+        if (!process.env.FORM_FACTOR) {
+          global.browser.setViewportSize(global.Terra.viewports(viewportEntry[0])[0]);
+        }
       });
       viewportEntry[1].forEach(test => runTest(test));
     });
