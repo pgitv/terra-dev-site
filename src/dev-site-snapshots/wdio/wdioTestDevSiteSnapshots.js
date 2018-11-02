@@ -19,21 +19,21 @@ const mergeObjectOfArrays = (object1, object2) => {
 };
 
 const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, options = {}, groupingDirectory = null) => {
-  if (!currentPage.pages && options.examples[currentPage.name]) {
+  if (!currentPage.pages && options.testSetup.examples[currentPage.name]) {
     const {
       viewports,
       selector,
       themeableProperties,
       axeOptions,
-    } = options.examples[currentPage.name];
+    } = options.testSetup.examples[currentPage.name];
     const viewportObject = {};
     (viewports || VIEWPORT_KEYS).forEach((viewport) => {
       viewportObject[viewport] = [{
         groupingDirectory,
-        selector,
+        selector: options.selector || selector,
         url: `/#/raw${currentRoute}${currentPage.path}`,
-        themeableProperties,
-        axeOptions,
+        themeableProperties: options.themeableProperties || themeableProperties,
+        axeOptions: options.axeOptions || axeOptions,
       }];
     });
     return viewportObject;
