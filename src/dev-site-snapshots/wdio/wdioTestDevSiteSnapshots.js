@@ -25,12 +25,14 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
       selector,
       themeableProperties,
       axeOptions,
+      parentName,
       name,
     } = options.testSetup.examples[currentPage.name];
     const viewportObject = {};
     (viewports || options.testSetup.viewports || VIEWPORT_KEYS).forEach((viewport) => {
       viewportObject[viewport] = [{
-        name: name || currentPage.name,
+        parentName: options.parentName || parentName || currentPage.name,
+        name: options.name || name || 'default',
         selector: options.selector || selector,
         url: `/#/raw${currentRoute}${currentPage.path}`,
         themeableProperties: options.themeableProperties || themeableProperties,
@@ -51,7 +53,7 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
 };
 
 const runTest = (test) => {
-  describe(test.name, () => {
+  describe(test.parentName, () => {
     global.before(() => {
       global.browser.url(test.url);
     });
