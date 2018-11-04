@@ -1,4 +1,3 @@
-import path from 'path';
 import SERVICE_DEFAULTS from 'terra-toolkit/config/wdio/services.default-config';
 import loadSiteConfig from '../../../scripts/generate-app-config/loadSiteConfig';
 import generatePagesConfig from '../../../scripts/generate-app-config/generatePagesConfig';
@@ -35,7 +34,7 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
         parentName: parentName || options.testSetup.parentName || currentPage.name,
         testName: testName || options.testSetup.testName,
         themedTestName: themedTestName || options.testSetup.themedTestName,
-        selector: options.selector || selector,
+        selector: selector || options.testSetup.selector,
         url: `/#/raw${currentRoute}${currentPage.path}`,
         themeableProperties: options.themeableProperties || themeableProperties,
         axeOptions: options.axeOptions || axeOptions,
