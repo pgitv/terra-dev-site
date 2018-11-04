@@ -27,12 +27,14 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
       axeOptions,
       parentName,
       name,
+      themedTestName,
     } = options.testSetup.examples[currentPage.name];
     const viewportObject = {};
     (viewports || options.testSetup.viewports || VIEWPORT_KEYS).forEach((viewport) => {
       viewportObject[viewport] = [{
         parentName: options.parentName || parentName || currentPage.name,
-        name: options.name || name || 'default',
+        name: options.name || name,
+        themedTestName: options.themedTestName || themedTestName,
         selector: options.selector || selector,
         url: `/#/raw${currentRoute}${currentPage.path}`,
         themeableProperties: options.themeableProperties || themeableProperties,
@@ -58,12 +60,13 @@ const runTest = (test) => {
       global.browser.url(test.url);
     });
 
-    global.Terra.should.matchScreenshot({ selector: test.selector });
+    const matchScreenshotArguments = test.name ? [test.name, { selector: test.selector }] : [{ selector: test.selector }];
+    global.Terra.should.matchScreenshot(...matchScreenshotArguments);
     global.Terra.should.beAccessible({ rules: test.axeOptions });
 
     if (test.themeableProperties) {
       global.Terra.should.themeCombinationOfCustomProperties({
-        testName: 'themed',
+        testName: test.themedTestName,
         selector: test.selector,
         properties: test.themeableProperties,
       });
