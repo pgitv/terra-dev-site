@@ -18,18 +18,19 @@ const mergeObjectOfArrays = (object1, object2) => {
   return mergedObject;
 };
 
-const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, options = {}, groupingDirectory = null) => {
+const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, options = {}) => {
   if (!currentPage.pages && options.testSetup.examples[currentPage.name]) {
     const {
       viewports,
       selector,
       themeableProperties,
       axeOptions,
+      name,
     } = options.testSetup.examples[currentPage.name];
     const viewportObject = {};
-    (viewports || VIEWPORT_KEYS).forEach((viewport) => {
+    (viewports || options.testSetup.viewports || VIEWPORT_KEYS).forEach((viewport) => {
       viewportObject[viewport] = [{
-        groupingDirectory,
+        name: name || currentPage.name,
         selector: options.selector || selector,
         url: `/#/raw${currentRoute}${currentPage.path}`,
         themeableProperties: options.themeableProperties || themeableProperties,
@@ -41,7 +42,7 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
   if (currentPage.pages) {
     let viewportObject = {};
     currentPage.pages.forEach((subPage) => {
-      const subViewportObject = createViewportObjectFromPageTree(pageKey, subPage, `${currentRoute}${currentPage.path}`, options, path.join(groupingDirectory || '', currentPage.name));
+      const subViewportObject = createViewportObjectFromPageTree(pageKey, subPage, `${currentRoute}${currentPage.path}`, options);
       viewportObject = mergeObjectOfArrays(viewportObject, subViewportObject);
     });
     return viewportObject;
@@ -55,14 +56,13 @@ const runTest = (test) => {
       global.browser.url(test.url);
     });
 
-    global.Terra.should.matchScreenshot({ groupingDirectory: test.groupingDirectory, selector: test.selector });
+    global.Terra.should.matchScreenshot({ selector: test.selector });
     global.Terra.should.beAccessible({ rules: test.axeOptions });
 
     if (test.themeableProperties) {
       global.Terra.should.themeCombinationOfCustomProperties({
         testName: 'themed',
         selector: test.selector,
-        groupingDirectory: test.groupingDirectory,
         properties: test.themeableProperties,
       });
     }
