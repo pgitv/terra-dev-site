@@ -69,15 +69,19 @@ const runTest = (test) => {
     global.Terra.should.beAccessible({ rules: test.axeOptions });
   });
 
-  describe(test.parentName, () => {
-    if (test.themeableProperties) {
+  if (test.themeableProperties) {
+    describe(test.parentName, () => {
+      global.before(() => {
+        global.browser.url(test.url);
+      });
+
       global.Terra.should.themeCombinationOfCustomProperties({
         testName: test.themedTestName,
         selector: test.selector,
         properties: test.themeableProperties,
       });
-    }
-  });
+    });
+  }
 };
 
 const wdioTestDevSiteSnapshots = (options = {}) => {
