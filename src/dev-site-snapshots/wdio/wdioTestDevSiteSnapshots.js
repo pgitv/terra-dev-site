@@ -19,26 +19,30 @@ const mergeObjectOfArrays = (object1, object2) => {
 
 const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, options = {}) => {
   if (!currentPage.pages && options.testSetup.examples[currentPage.name]) {
-    const {
-      viewports,
-      selector,
-      themeableProperties,
-      axeOptions,
-      parentName,
-      testName,
-      themedTestName,
-    } = options.testSetup.examples[currentPage.name];
     const viewportObject = {};
-    (viewports || options.testSetup.viewports || VIEWPORT_KEYS).forEach((viewport) => {
-      viewportObject[viewport] = [{
-        parentName: parentName || options.testSetup.parentName || currentPage.name,
-        testName: testName || options.testSetup.testName,
-        themedTestName: themedTestName || options.testSetup.themedTestName,
-        selector: selector || options.testSetup.selector,
-        url: `/#/raw${currentRoute}${currentPage.path}`,
-        themeableProperties: options.themeableProperties || themeableProperties,
-        axeOptions: options.axeOptions || axeOptions,
-      }];
+    const currentPageExample = options.testSetup.examples[currentPage.name];
+    const exampleArray = Array.isArray(currentPageExample) ? currentPageExample : [currentPageExample];
+    exampleArray.forEach((example) => {
+      const {
+        viewports,
+        selector,
+        themeableProperties,
+        axeOptions,
+        parentName,
+        testName,
+        themedTestName,
+      } = example;
+      (viewports || options.testSetup.viewports || VIEWPORT_KEYS).forEach((viewport) => {
+        viewportObject[viewport] = [{
+          parentName: parentName || options.testSetup.parentName || currentPage.name,
+          testName: testName || options.testSetup.testName,
+          themedTestName: themedTestName || options.testSetup.themedTestName,
+          selector: selector || options.testSetup.selector,
+          url: `/#/raw${currentRoute}${currentPage.path}`,
+          themeableProperties: options.themeableProperties || themeableProperties,
+          axeOptions: options.axeOptions || axeOptions,
+        }];
+      });
     });
     return viewportObject;
   }
