@@ -33,7 +33,8 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
         themedTestName,
       } = example;
       (viewports || options.testSetup.viewports || VIEWPORT_KEYS).forEach((viewport) => {
-        viewportObject[viewport] = [{
+        viewportObject[viewport] = viewportObject[viewport] || [];
+        viewportObject[viewport].push({
           parentName: parentName || options.testSetup.parentName || currentPage.name,
           testName: testName || options.testSetup.testName,
           themedTestName: themedTestName || options.testSetup.themedTestName,
@@ -41,7 +42,7 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
           url: `/#/raw${currentRoute}${currentPage.path}`,
           themeableProperties: options.themeableProperties || themeableProperties,
           axeOptions: options.axeOptions || axeOptions,
-        }];
+        });
       });
     });
     return viewportObject;
