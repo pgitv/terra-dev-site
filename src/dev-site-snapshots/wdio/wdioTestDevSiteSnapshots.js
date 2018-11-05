@@ -40,8 +40,8 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
           themedTestName: themedTestName || options.testSetup.themedTestName,
           selector: selector || options.testSetup.selector,
           url: `/#/raw${currentRoute}${currentPage.path}`,
-          themeableProperties: options.testSetup.themeableProperties || themeableProperties,
-          axeOptions: options.axeOptions || axeOptions,
+          themeableProperties: themeableProperties || options.testSetup.themeableProperties,
+          axeOptions: axeOptions || options.testSetup.axeOptions,
         });
       });
     });
@@ -67,7 +67,9 @@ const runTest = (test) => {
     const matchScreenshotArguments = test.testName ? [test.testName, { selector: test.selector }] : [{ selector: test.selector }];
     global.Terra.should.matchScreenshot(...matchScreenshotArguments);
     global.Terra.should.beAccessible({ rules: test.axeOptions });
+  });
 
+  describe(test.parentName, () => {
     if (test.themeableProperties) {
       global.Terra.should.themeCombinationOfCustomProperties({
         testName: test.themedTestName,
