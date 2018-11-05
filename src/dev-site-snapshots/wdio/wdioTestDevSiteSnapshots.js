@@ -40,7 +40,7 @@ const createViewportObjectFromPageTree = (pageKey, currentPage, currentRoute, op
           themedTestName: themedTestName || options.testSetup.themedTestName,
           selector: selector || options.testSetup.selector,
           url: `/#/raw${currentRoute}${currentPage.path}`,
-          themeableProperties: options.themeableProperties || themeableProperties,
+          themeableProperties: options.testSetup.themeableProperties || themeableProperties,
           axeOptions: options.axeOptions || axeOptions,
         });
       });
