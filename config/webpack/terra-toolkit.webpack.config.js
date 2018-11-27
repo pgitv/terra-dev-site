@@ -29,7 +29,8 @@ const webpackConfig = (options, env, argv) => {
       rules: [
         {
           test: /\.(jsx|js)$/,
-          exclude: /(node_modules|aggregate-translations)/,
+          include: /(src|packages|dev-site-config)/,
+          // exclude: /(node_modules|aggregated-translations)/,
           use: 'babel-loader',
         },
         {
